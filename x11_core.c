@@ -137,7 +137,7 @@ void core_update_post()
   //   rect_y = rect_ny;
   // }
 
-  usleep(1000*1000/FPS);
+  // usleep(1000*1000/FPS);
 }
 void core_cleanup()
 {
