@@ -64,6 +64,7 @@ main :: proc()
     fill_rect( pixels, rect_x, rect_y, rect_width, rect_height )
 
     fill_circle( pixels, width / 2, height / 2, 100 )
+    fill_rect( pixels, width / 2, height / 2, 10, 10 )
 
     // if input.key_states[Key.ESCAPE].down
     // {
@@ -127,6 +128,7 @@ fill_rect :: proc(pixels: [^]c.uint32_t, x0, y0: int, w, h: int)
 
 fill_circle :: proc(pixels: [^]c.uint32_t, x0, y0: int, radius: int)
 {
+  dist_max : f32 = 0.0
   for dx := 0; dx < radius; dx += 1 
   {
     for dy := 0; dy < radius; dy += 1
@@ -138,12 +140,16 @@ fill_circle :: proc(pixels: [^]c.uint32_t, x0, y0: int, radius: int)
       // dist_x := m.abs(f32(x) - f32(x0))
       // dist_y := m.abs(f32(y) - f32(y0))
       // fmt.println( "dist x:", dist_x, ", y:", dist_y )
+      // fmt.println( "dist:", dist )
+      if dist > dist_max { dist_max = dist }
       if dist <= f32(radius)
       {
         pixels[y*width + x] = 0xFF00FF // 0xFF0000
         // fmt.println( "dist:", dist )
       }
+      pixels[y*width + x] = u32( m.clamp(dist / f32(radius), 0, 1) /*  * 0xFF0000 */ ) // 0xFF0000
     }
   }
+  // fmt.println( "dist_max:", dist_max )
   // os.exit(0)
 }
