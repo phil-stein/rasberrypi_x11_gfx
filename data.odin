@@ -5,6 +5,7 @@ import str    "core:strings"
 import        "core:time"
 import        "core:fmt"
 import        "vendor:glfw"
+import gl     "vendor:OpenGL"
 
 // "typedefs" for linalg/glsl package
 vec2 :: linalg.vec2
@@ -93,6 +94,12 @@ data_t :: struct
   vsync_enabled          : bool,
 
   wireframe_mode_enabled : bool,
+
+  quad_vao : u32,
+  quad_vbo : u32,
+
+  basic_shader          : u32,
+  quad_shader           : u32,
   
   cam : struct
   {
@@ -130,6 +137,29 @@ data : data_t =
 data_init :: proc()
 {
   time.stopwatch_start( &data.delta_t_stopwatch )
+
+  // screen quad 
+	quad_verts := [?]f32{ 
+	  // pos       // uv 
+	  -1.0,  1.0,  0.0, 1.0,
+	  -1.0, -1.0,  0.0, 0.0,
+	   1.0, -1.0,  1.0, 0.0,
+
+	  -1.0,  1.0,  0.0, 1.0,
+	   1.0, -1.0,  1.0, 0.0,
+	   1.0,  1.0,  1.0, 1.0
+	}
+
+	// screen quad VAO
+	gl.GenVertexArrays( 1, &data.quad_vao )
+	gl.GenBuffers( 1, &data.quad_vbo )
+	gl.BindVertexArray( data.quad_vao )
+	gl.BindBuffer( gl.ARRAY_BUFFER, data.quad_vbo);
+	gl.BufferData( gl.ARRAY_BUFFER, size_of(quad_verts), &quad_verts, gl.STATIC_DRAW); // quad_verts is 24 long
+	gl.EnableVertexAttribArray(0);
+	gl.VertexAttribPointer( 0, 2, gl.FLOAT, gl.FALSE, 4 * size_of(f32), 0 )
+	gl.EnableVertexAttribArray( 1 )
+	gl.VertexAttribPointer( 1, 2, gl.FLOAT, gl.FALSE, 4 * size_of(f32), 2 * size_of(f32) )
 }
 
 data_pre_updated :: proc()
